@@ -1,16 +1,24 @@
 import React, {useState} from 'react';
+import {connect} from 'react-redux';
 
-export default () => {
+import {createPost} from "../redux/actions";
+
+const PostForm = ({createPost}) => {
     const [title, setTitle] = useState('');
 
     const submitHandler = e => {
         e.preventDefault();
+
+        if (!title.trim()) {
+            return
+        }
 
         const newPost = {
             title,
             id: Date.now().toString()
         };
 
+        createPost(newPost);
         setTitle('')
     };
 
@@ -37,3 +45,8 @@ export default () => {
     )
 };
 
+const mapDispatchToProps = {
+    createPost
+};
+
+export default connect(null, mapDispatchToProps)(PostForm)

@@ -1,16 +1,17 @@
 import React, {useState} from 'react';
 import {connect} from 'react-redux';
 
-import {createPost} from "../redux/actions";
+import {createPost, showAlert} from "../redux/actions";
+import {Alert} from "./Alert";
 
-const PostForm = ({createPost}) => {
+const PostForm = ({createPost, showAlert, alert}) => {
     const [title, setTitle] = useState('');
 
     const submitHandler = e => {
         e.preventDefault();
 
         if (!title.trim()) {
-            return
+            return showAlert('Название поста не может быть пустым')
         }
 
         const newPost = {
@@ -28,6 +29,8 @@ const PostForm = ({createPost}) => {
 
     return (
         <form onSubmit={submitHandler}>
+            {alert ? <Alert text={alert}/> : null}
+
             <div className="form-group">
                 <label htmlFor="title">Заголовок поста</label>
                 <input
@@ -45,8 +48,12 @@ const PostForm = ({createPost}) => {
     )
 };
 
+const mapStateToProps = state => ({
+    alert: state.app.alert
+});
+
 const mapDispatchToProps = {
-    createPost
+    createPost, showAlert
 };
 
-export default connect(null, mapDispatchToProps)(PostForm)
+export default connect(mapStateToProps, mapDispatchToProps)(PostForm)

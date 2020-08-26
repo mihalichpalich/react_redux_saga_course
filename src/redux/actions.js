@@ -1,4 +1,4 @@
-import {CREATE_POST, FETCH_POSTS, HIDE_LOADER, SHOW_LOADER} from "./types";
+import {CREATE_POST, FETCH_POSTS, HIDE_ALERT, HIDE_LOADER, SHOW_ALERT, SHOW_LOADER} from "./types";
 
 export const createPost = (post) => {
     return {
@@ -19,20 +19,43 @@ export const hideLoader = () => {
     }
 };
 
-export const fetchPosts = () => {
-    return async dispatch => {
-        dispatch(showLoader());
-
-        const response = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=5');
-        const postsJSON = await response.json();
+export const showAlert = (text) => {
+    return dispatch => {
+        dispatch({
+            type: SHOW_ALERT,
+            payload: text
+        });
 
         setTimeout(() => {
-            dispatch({
-                type: FETCH_POSTS,
-                payload: postsJSON
-            });
-            dispatch(hideLoader())
-        }, 500);
+            dispatch(hideAlert())
+        }, 3000)
+    }
+};
 
+export const hideAlert = () => {
+    return {
+        type: HIDE_ALERT
+    }
+};
+
+export const fetchPosts = () => {
+    return async dispatch => {
+        try {
+            dispatch(showLoader());
+
+            const response = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=5');
+            const postsJSON = await response.json();
+
+            setTimeout(() => {
+                dispatch({
+                    type: FETCH_POSTS,
+                    payload: postsJSON
+                });
+                dispatch(hideLoader())
+            }, 500);
+        } catch (e) {
+            dispatch(showAlert('Что-то пошло не так'));
+            dispatch(hideLoader())
+        }
     }
 };
